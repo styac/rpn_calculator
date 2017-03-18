@@ -83,9 +83,14 @@ public:
         ecIndexTooBig,      // index too big        
         ecIndexTooSmall     // index too small        
     };
+
+    EC eval( const std::string& inp )
+    {            
+        std::stringstream ss(inp);
+        return eval(ss);
+    }
     
-    // __attribute__ ((noinline)) is gcc specific
-    
+    // __attribute__ ((noinline)) is gcc specific    
     EC __attribute__ ((noinline))  eval( std::stringstream& inp )
     {            
         double val1;
@@ -151,6 +156,95 @@ public:
                     continue;
                 // TODO
                 // put here all func to select with 1st char
+                case 'a' : 
+//                    continue;                    
+                case 'b' : 
+//                    continue;                    
+                case 'c' : 
+//                    continue;                    
+                case 'd' : 
+//                    continue;                    
+                case 'e' : 
+//                    continue;                    
+                case 'f' : 
+//                    continue;                    
+                case 'g' : 
+//                    continue;                    
+                case 'h' : 
+//                    continue;                    
+                case 'i' : 
+//                    continue;                    
+                case 'j' : 
+//                    continue;                    
+                case 'k' : 
+//                    continue;                    
+                case 'l' : 
+//                    continue;                    
+                case 'm' : 
+//                    continue;                    
+                case 'n' : 
+//                    continue;                    
+                case 'o' : 
+//                    continue;                    
+                case 'p' : 
+//                    continue;                    
+                case 'q' : 
+//                    continue;                    
+                case 'r' : 
+//                    continue;                    
+                case 's' : 
+//                    continue;                    
+                case 't' : 
+//                    continue;                    
+                case 'u' : 
+//                    continue;                    
+                case 'v' : 
+//                    continue;                    
+                case 'w' : 
+//                    continue;                    
+                case 'x' : 
+//                    continue;                    
+                case 'y' : 
+//                    continue;                    
+                case 'z' : 
+//                    continue;                    
+// reserved                    
+//                case '&' : 
+//                    continue;                    
+//                case '`' : 
+//                    continue;                    
+//                case '?' : 
+//                    continue;                    
+//                case '<' : 
+//                    continue;                    
+//                case '>' : 
+//                    continue;                    
+//                case '=' : 
+//                    continue;                    
+//                case '.' : 
+//                    continue;                    
+//                case ',' : 
+//                    continue;                    
+//                case ':' : 
+//                    continue;                    
+//                case ';' : 
+//                    continue;                    
+//                case '[' : 
+//                    continue;                    
+//                case ']' : 
+//                    continue;                    
+//                case '(' : 
+//                    continue;                    
+//                case ')' : 
+//                    continue;                    
+//                case '{' : 
+//                    continue;                    
+//                case '}' : 
+//                    continue;                    
+//                case '%' : 
+//                    continue;                    
+                    
+                    
                 default:
                     return EC::ecIllegalOp;                    
                 } // end switch                
@@ -209,6 +303,12 @@ public:
                     if( !hasResult(op.substr(1)) ) // chop prefix
                         return EC::ecIllegalVar;
                     push(vars[op.substr(1)]);     
+                } else if ( op[0] == '|' ) { // swap variable with stack
+                    if( !hasResult(op.substr(1)) ) // chop prefix
+                        return EC::ecIllegalVar;
+                    val1 = vars[op.substr(1)];
+                    vars[op.substr(1)] = get();
+                    set(val1);
                 //
                 // 1 operand math
                 //
@@ -347,7 +447,7 @@ public:
                         return EC::ecIndexTooSmall;
                     uint32_t count = uint32_t(val1); // truncated
                     if( count == 1 )
-                        return EC::ecOk; // 1 operand
+                        continue; // 1 operand
                     if( stack.size() < count )  // stack size : 1.. index: 0 ..
                         return EC::ecIndexTooBig; 
                     long double val = pop();
@@ -365,7 +465,7 @@ public:
                         return EC::ecIndexTooSmall;
                     uint32_t count = uint32_t(val1);   // truncated                 
                     if( count == 1 )
-                        return EC::ecOk; // 1 operand
+                        continue; // 1 operand
                     if( stack.size() < count )  // stack size : 1.. index: 0 ..
                         return EC::ecIndexTooBig; 
                     long double val = pop();

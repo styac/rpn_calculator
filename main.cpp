@@ -523,6 +523,34 @@ int main(int argc, char** argv)
         }
     } 
     {
+        std::cout << "\n****** swap variable with stack ****\n" << std::endl;  
+        rpn.clear();
+        std::string v1("v1");
+        std::string str( "2 @v1 3 |v1" );
+        std::stringstream ss(str);
+        std::cout << "       eval swap var: " << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult(v1) ) {
+                bool res = bool( rpn.result(v1) == 3 );
+                std::cout << "result: "    << rpn.result(v1) << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+                res = bool( rpn.result() == 2 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            } else {
+                std::cout << "var empty " << v1  << std::endl;                
+                ++testfailed;                                   
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                                   
+        }
+    } 
+    {
         std::cout << "\n****** dup from n level ****\n" << std::endl;  
         rpn.clear();
         // stack data 0 .. 6
@@ -645,6 +673,25 @@ int main(int argc, char** argv)
         }
     }
 
+    {
+        std::cout << "\n****** use string interface ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "1 2 3 4 5 6 6 multn" );
+        std::cout << "       eval addn: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(str) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 720 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }
+    
     // end result
     
     if(testfailed) {
