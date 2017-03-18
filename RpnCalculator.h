@@ -47,6 +47,7 @@
 //  $v1 push variable v1 to stack
 //
 
+
 namespace rpnCalculator
 {
     
@@ -65,7 +66,9 @@ public:
         ecIndexToobig,      // index too big        
     };
     
-    EC eval( std::stringstream& inp )
+    // __attribute__ ((noinline)) is gcc specific
+    
+    EC __attribute__ ((noinline))  eval( std::stringstream& inp )
     {            
         double val1;
         double val2;
@@ -194,7 +197,7 @@ public:
         } // end while
         return EC::ecOk;
     }
-
+        
     bool hasResult() const
     {
         return stack.size() > 0;
@@ -251,7 +254,7 @@ private:
     std::map< std::string, double > vars;    
 };
     
-}
+} // end namespace rpnCalculator
 
 #endif /* RPNCALCULATOR_H */
 
