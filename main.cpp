@@ -1,10 +1,23 @@
 /*
  * Copyright (C) 2017 Istvan Simon -- stevens37 at gmail dot com
  *
- * This program is free software; 
- * PUBLIC DOMAIN
+ * Permission is hereby granted, free of charge, to any person obtaining 
+ * a copy of this software and associated documentation files (the "Software"), 
+ * to deal in the Software without restriction, including without limitation 
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the 
+ * Software is furnished to do so, subject to the following conditions:
  * 
- * Created on March 17, 2017, 4:29 PM
+ * The above copyright notice and this permission notice shall be included 
+ * in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
  */
 
 #include <cstdlib>
@@ -18,6 +31,8 @@ using varmap_t = rpnCalculator::RpnCalculator::varmap_t;
 
 /*
  * 
+ * TEST CASES
+ * 
  */
 
 int main(int argc, char** argv) 
@@ -26,6 +41,7 @@ int main(int argc, char** argv)
     RPNEC rpres;
     RpnCalculator rpn;
     {
+        std::cout << "\n****** push ****\n" << std::endl;    
         rpn.clear();
         std::string str( "1" );
         std::stringstream ss(str);
@@ -33,7 +49,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == (rpres = rpn.eval(ss))  ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 1);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -47,6 +63,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** add ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 4 +" );
         std::stringstream ss(str);
@@ -54,7 +71,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 6);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -68,6 +85,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** illegal: stack empty ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 +" );
         std::stringstream ss(str);
@@ -80,14 +98,15 @@ int main(int argc, char** argv)
         }
     }    
     {
+        std::cout << "\n****** substract ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 4 -" );
         std::stringstream ss(str);
-        std::cout << "       eval substact: "     << str << std::endl;    
+        std::cout << "       eval substract: "     << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == -2);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -101,6 +120,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** multiply ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 4 *" );
         std::stringstream ss(str);
@@ -108,7 +128,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 8);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -121,6 +141,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** divide ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 4 /" );
         std::stringstream ss(str);
@@ -128,7 +149,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 0.5);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -139,6 +160,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** swap divide ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 4 swap /" );
         std::stringstream ss(str);
@@ -146,7 +168,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 2);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -159,6 +181,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** dup dup multiply ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 ~ ~ * *" );
         std::stringstream ss(str);
@@ -166,7 +189,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 8 );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -179,6 +202,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** negate ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 !" );
         std::stringstream ss(str);
@@ -186,7 +210,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == -2);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -199,6 +223,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** drop ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 3 4 ^" );
         std::stringstream ss(str);
@@ -206,7 +231,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 3);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -219,6 +244,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** logarithm ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 log" );
         std::stringstream ss(str);
@@ -226,7 +252,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == std::log(2.0) );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -239,6 +265,7 @@ int main(int argc, char** argv)
         }
     }
     {
+        std::cout << "\n****** sine ****\n" << std::endl;  
         rpn.clear();
         std::string str( "3.1415 2 / sin" );
         std::stringstream ss(str);
@@ -246,7 +273,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == std::sin(3.1415 / 2.0) );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -259,6 +286,7 @@ int main(int argc, char** argv)
         }
     }    
     {
+        std::cout << "\n****** cosine ****\n" << std::endl;  
         rpn.clear();
         std::string str( "3.1415 cos" );
         std::stringstream ss(str);
@@ -266,7 +294,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == std::cos( 3.1415 ) );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -279,6 +307,7 @@ int main(int argc, char** argv)
         }
     }    
     {
+        std::cout << "\n****** tangent ****\n" << std::endl;  
         rpn.clear();
         std::string str( "3.1415 2 * tan" );
         std::stringstream ss(str);
@@ -286,7 +315,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == std::tan( 3.1415 *2.0 ) );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -299,6 +328,7 @@ int main(int argc, char** argv)
         }
     }    
     {
+        std::cout << "\n****** exponent ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 exp" );
         std::stringstream ss(str);
@@ -306,7 +336,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == std::exp( 2.0 ) );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -319,6 +349,7 @@ int main(int argc, char** argv)
         }
     }   
     {
+        std::cout << "\n****** modulus ****\n" << std::endl;  
         rpn.clear();
         std::string str( "18 5 mod" );
         std::stringstream ss(str);
@@ -326,7 +357,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 3);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -337,6 +368,7 @@ int main(int argc, char** argv)
         }
     }   
     {
+        std::cout << "\n****** reciprocal ****\n" << std::endl;  
         rpn.clear();
         std::string str( "3.0 r" );
         std::stringstream ss(str);
@@ -344,7 +376,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 1.0 / 3.0);
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -357,6 +389,7 @@ int main(int argc, char** argv)
         }
     }  
     {
+        std::cout << "\n****** more operations ****\n" << std::endl;  
         rpn.clear();
         std::string str( "2 3 4 5 + - *" );
         std::stringstream ss(str);
@@ -364,7 +397,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == -12 );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -376,6 +409,7 @@ int main(int argc, char** argv)
     } 
 
     {
+        std::cout << "\n****** left rotation ****\n" << std::endl;  
         rpn.clear();
         std::string str( "1 2 3 4 5 lrot" );
         std::stringstream ss(str);
@@ -383,7 +417,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 3 );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 } else {
@@ -392,7 +426,7 @@ int main(int argc, char** argv)
                     std::cout << "     --  eval left rot drop: "  << str << std::endl;    
                     if( RPNEC::ecOk == rpn.eval(ss) ) {
                         bool res = bool( rpn.result() == 5 );
-                        std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                        std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                         if( !res ) {
                             ++testfailed;                    
                         }                        
@@ -407,6 +441,7 @@ int main(int argc, char** argv)
         }
     } 
     {
+        std::cout << "\n****** right rotation ****\n" << std::endl;  
         rpn.clear();
         std::string str( "1 2 3 4 5 rrot" );
         std::stringstream ss(str);
@@ -414,7 +449,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 4 );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 } else {
@@ -423,7 +458,7 @@ int main(int argc, char** argv)
                     std::cout << "     --  eval right rot drop: "  << str << std::endl;    
                     if( RPNEC::ecOk == rpn.eval(ss) ) {
                         bool res = bool( rpn.result() == 3 );
-                        std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                        std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                         if( !res ) {
                             ++testfailed;                    
                         }                        
@@ -439,6 +474,7 @@ int main(int argc, char** argv)
     } 
 
     {
+        std::cout << "\n****** using variables ****\n" << std::endl;  
         rpn.clear();
         std::string v1("v1");
         std::string v2("v2");
@@ -449,7 +485,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult(v1) ) {
                 bool res = bool( rpn.result(v1) == 2 );
-                std::cout << "result: "    << rpn.result(v1) << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result(v1) << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -459,7 +495,7 @@ int main(int argc, char** argv)
             }            
             if( rpn.hasResult(v2) ) {
                 bool res = bool( rpn.result(v2) == 3 );
-                std::cout << "result: "    << rpn.result(v2) << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result(v2) << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -472,7 +508,7 @@ int main(int argc, char** argv)
             } 
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 5 );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -486,6 +522,7 @@ int main(int argc, char** argv)
         }
     } 
     {
+        std::cout << "\n****** dup from n level ****\n" << std::endl;  
         rpn.clear();
         // stack data 0 .. 6
         // index 4 (from 0..)
@@ -496,7 +533,7 @@ int main(int argc, char** argv)
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
                 bool res = bool( rpn.result() == 2.2 );
-                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
@@ -508,6 +545,7 @@ int main(int argc, char** argv)
     }
     
     {
+        std::cout << "\n****** using variables externally ****\n" << std::endl;  
         rpn.clear();
         varmap_t& vars = rpn.variables();
         std::string v1("v1");
@@ -517,12 +555,12 @@ int main(int argc, char** argv)
         std::cout << "       eval acces variables: "  << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {            
             bool res = bool( vars[v1] == 2.2 );
-            std::cout << "result: " << v1 << "=" << vars[v1] << std::boolalpha << " " <<res << std::endl;  
+            std::cout << "result: " << v1 << "=" << vars[v1] << std::boolalpha << " " << res << std::endl;  
             if( !res ) {
                 ++testfailed;                    
             }
             res = bool( vars[v2] == 1.1 );
-            std::cout << "result: " << v2 << "=" << vars[v2] << std::boolalpha << " " <<res << std::endl;  
+            std::cout << "result: " << v2 << "=" << vars[v2] << std::boolalpha << " " << res << std::endl;  
             if( !res ) {
                 ++testfailed;                    
             }
@@ -531,7 +569,8 @@ int main(int argc, char** argv)
             std::cout << "     --  eval add vars: "  << str1 << std::endl;    
             if( RPNEC::ecOk == rpn.eval(ss) ) {   
                 double result = 3.3;
-                bool res = bool(  std::abs(vars["res"] - result) < 1.0e-15 );
+                // small diff: 4.44089e-16 ??
+                bool res = bool( std::abs( vars["res"] - result ) < 1.0e-15 );
                 std::cout << "result: " << vars["res"] << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
