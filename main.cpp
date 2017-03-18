@@ -371,7 +371,7 @@ int main(int argc, char** argv)
     {
         std::cout << "\n****** reciprocal ****\n" << std::endl;  
         rpn.clear();
-        std::string str( "3.0 r" );
+        std::string str( "3.0 rec" );
         std::stringstream ss(str);
         std::cout << "       eval reciproc: "     << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {

@@ -149,11 +149,6 @@ public:
                         return EC::ecStackLow;
                     set(-get());
                     continue;
-                case 'r' : // reciproc
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(1.0/get());
-                    continue;
                 // TODO
                 // put here all func to select with 1st char
                 default:
@@ -217,6 +212,10 @@ public:
                 //
                 // 1 operand math
                 //
+                } else if ( op == "rec" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(1.0/get());
                 } else if ( op == "sin" ) {
                     if( stack.size() < 1 )
                         return EC::ecStackLow;
@@ -343,33 +342,37 @@ public:
                         return EC::ecStackLow;
                     val1 = pop();   // count
                     if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
-                        return EC::ecIndexTooBig;
-                    if( val1 <= 1 ) // too small number
+                        return EC::ecIndexTooBig;                    
+                    if( val1 < 1.0 ) // too small number
                         return EC::ecIndexTooSmall;
-                    uint32_t count = uint32_t(val1);                    
+                    uint32_t count = uint32_t(val1); // truncated
+                    if( count == 1 )
+                        return EC::ecOk; // 1 operand
                     if( stack.size() < count )  // stack size : 1.. index: 0 ..
                         return EC::ecIndexTooBig; 
-                    val2 = pop();
+                    long double val = pop();
                     for(uint32_t i=0; i<count-1; ++i ) {
-                        val2 += pop();
+                        val += pop();
                     }                    
-                    push(val2);   
+                    push(val);   
                 } else if ( op == "multn" ) { // mult n numbers
                     if( stack.size() < 2 )
                         return EC::ecStackLow;
                     val1 = pop();   // count
                     if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
                         return EC::ecIndexTooBig;
-                    if( val1 <= 1 ) // too small number
+                    if( val1 < 1.0 ) // too small number
                         return EC::ecIndexTooSmall;
-                    uint32_t count = uint32_t(val1);                    
+                    uint32_t count = uint32_t(val1);   // truncated                 
+                    if( count == 1 )
+                        return EC::ecOk; // 1 operand
                     if( stack.size() < count )  // stack size : 1.. index: 0 ..
                         return EC::ecIndexTooBig; 
-                    val2 = pop();
+                    long double val = pop();
                     for(uint32_t i=0; i<count-1; ++i ) {
-                        val2 *= pop();
+                        val *= pop();
                     }                    
-                    push(val2);   
+                    push(val);   
                     
                 } else if ( op == "clrs" ) { // clear stack
                     stack.clear();
