@@ -72,6 +72,7 @@ public:
     {            
         double val1;
         double val2;
+        double val3;
         std::string op;
         while(!inp.eof()) {    
             std::stringstream::pos_type pos = inp.tellg();
@@ -182,6 +183,24 @@ public:
                     val1 = pop();
                     val2 = pop();
                     push( std::fmod( val2, val1 ) ); 
+                } else if ( op == "lrot" ) {
+                    if( stack.size() < 3 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    val3 = pop();
+                    push( val1 );                     
+                    push( val3 );                     
+                    push( val2 );                     
+                } else if ( op == "rrot" ) {
+                    if( stack.size() < 3 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    val3 = pop();
+                    push( val2 );                     
+                    push( val1 );                     
+                    push( val3 );                     
                 } else if ( op[0] == '@' ) { // copy stack to var                    
                     if( stack.size() < 1 )
                         return EC::ecStackLow;

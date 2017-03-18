@@ -354,6 +354,43 @@ int main(int argc, char** argv)
 
     {
         rpn.clear();
+        std::string str( "1 2 3 4 5 lrot" );
+        std::stringstream ss(str);
+        std::cout << "       eval left rot: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 4 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    } 
+    {
+        rpn.clear();
+        std::string str( "1 2 3 4 5 rrot" );
+        std::stringstream ss(str);
+        std::cout << "       eval right rot: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 3 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    } 
+
+    {
+        rpn.clear();
         std::string v1("v1");
         std::string v2("v2");
         std::string v3("v3");
