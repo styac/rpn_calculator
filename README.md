@@ -22,6 +22,8 @@
   tan
   log
   exp
+  mod : modulo with double
+  
 ```
 ## variable operations
 ```
