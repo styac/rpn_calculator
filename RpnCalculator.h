@@ -12,12 +12,13 @@
 #ifndef RPNCALCULATOR_H
 #define RPNCALCULATOR_H
 
-#include    <vector>
 #include    <cstdint>
 #include    <string>
 #include    <sstream>
 #include    <iostream>
 #include    <cmath>
+#include    <vector>
+#include    <map>
 
 //
 //
@@ -39,6 +40,10 @@
 //  tan
 //  log
 //  exp
+//
+// variables
+//  @v1 copy top of stack to variable v1; if v1 exists overwrite it
+//  $v1 push variable v1 to stack
 //
 
 namespace rpnCalculator
@@ -154,7 +159,15 @@ public:
                         return false;
                     val1 = pop();
                     val2 = pop();
-                    push( std::fmod( val2, val1 ) );                
+                    push( std::fmod( val2, val1 ) ); 
+                } else if ( op[0] == '@' ) { // copy stack to var                    
+                    if( stack.size() < 1 )
+                        return false;
+                    vars[op.substr(1)] = get();
+                } else if ( op[0] == '$' ) { // push var to stack
+                    if( !hasResult(op.substr(1)) )
+                        return false;
+                    push(vars[op.substr(1)]);                    
                 } else {
                     return false;                    
                 }                                       
@@ -168,6 +181,11 @@ public:
         return stack.size() > 0;
     }
     
+    bool hasResult(const std::string& var) const
+    {
+        return vars.find(var) !=  vars.end();
+    }
+    
     void clear()
     {
         stack.clear();
@@ -178,6 +196,11 @@ public:
         if( stack.size() > 0 )
             return stack.back();
         return 0.0;
+    }
+
+    double result( const std::string& var)
+    {
+        return vars[var];
     }
     
 private:
@@ -199,7 +222,10 @@ private:
     {
         stack.back() = val;
     }
+    
+    // members
     std::vector<double> stack;    
+    std::map< std::string, double > vars;    
 };
     
 }
