@@ -308,5 +308,48 @@ int main(int argc, char** argv)
             
         }
     } 
+
+    {
+        rpn.clear();
+        std::string v1("v1");
+        std::string v2("v2");
+        std::string v3("v3");
+        std::string str( "2 @v1 3 @v2 ^ ^ $v1 $v2 +" );
+        std::stringstream ss(str);
+        std::cout << "---eval set var: " << str << std::endl;    
+        if( rpn.eval(ss) ) {
+            if( rpn.hasResult(v1) ) {
+                std::cout << "result: "    << rpn.result(v1) << std::endl;                
+                std::cout << std::boolalpha  << "* "    << bool( rpn.result(v1) == 2 )  << std::endl;   
+            } else {
+                std::cout << "var empty " << v1  << std::endl;                
+            }            
+            if( rpn.hasResult(v2) ) {
+                std::cout << "result: "    << rpn.result(v2) << std::endl;                
+                std::cout << std::boolalpha  << "* "    << bool( rpn.result(v2) == 3 )  << std::endl;   
+            } else {
+                std::cout << "var empty " << v2 << std::endl;                
+            }            
+            if( !rpn.hasResult(v3) ) {
+                std::cout << "result false: ok" << std::endl;                
+            } 
+            if( rpn.hasResult() ) {
+                std::cout << "result: "    << rpn.result() << std::endl;                
+                std::cout << std::boolalpha  << "* "    << bool( rpn.result() == 5 )  << std::endl;   
+            } else {
+                std::cout << "stack empty" << std::endl;                
+            }                        
+            
+        } else {
+            std::cout << "error"  << std::endl;                
+            
+        }
+    } 
+
+
+
+
+
+
 }
 
