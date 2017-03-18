@@ -6,9 +6,9 @@
 
 ## operators
 ```
-   @'    : copy stack to variable                    
-   $'    : push variable to stack
-   |'    : swap variable with stack
+   @     : copy stack to variable                    
+   $     : push variable to stack
+   |     : swap variable with stack
    +
    -
    /
