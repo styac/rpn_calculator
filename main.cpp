@@ -14,6 +14,7 @@
 using namespace std;
 using namespace rpnCalculator;
 using RPNEC = rpnCalculator::RpnCalculator::EC;
+using varmap_t = rpnCalculator::RpnCalculator::varmap_t;
 
 /*
  * 
@@ -22,7 +23,29 @@ using RPNEC = rpnCalculator::RpnCalculator::EC;
 int main(int argc, char** argv) 
 {
     int testfailed = 0;
+    RPNEC rpres;
     RpnCalculator rpn;
+    {
+        rpn.clear();
+        std::string str( "1" );
+        std::stringstream ss(str);
+        std::cout << "       eval push: "     << str << std::endl;    
+        if( RPNEC::ecOk == (rpres = rpn.eval(ss))  ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 1);
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            } else {
+                std::cout << "stack empty" << std::endl;                
+                ++testfailed;
+            }            
+        } else {
+            std::cout << "error " << int(rpres) << std::endl;                            
+            ++testfailed;
+        }
+    }
     {
         rpn.clear();
         std::string str( "2 4 +" );
@@ -363,6 +386,19 @@ int main(int argc, char** argv)
                 std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
+                } else {
+                    std::string str( "^" );
+                    ss.str(str);
+                    std::cout << "     --  eval left rot drop: "  << str << std::endl;    
+                    if( RPNEC::ecOk == rpn.eval(ss) ) {
+                        bool res = bool( rpn.result() == 5 );
+                        std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                        if( !res ) {
+                            ++testfailed;                    
+                        }                        
+                    } else {
+                        ++testfailed;
+                    }                    
                 }
             }            
         } else {
@@ -381,6 +417,19 @@ int main(int argc, char** argv)
                 std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
+                } else {
+                    std::string str( "^" );
+                    ss.str(str);
+                    std::cout << "     --  eval right rot drop: "  << str << std::endl;    
+                    if( RPNEC::ecOk == rpn.eval(ss) ) {
+                        bool res = bool( rpn.result() == 3 );
+                        std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
+                        if( !res ) {
+                            ++testfailed;                    
+                        }                        
+                    } else {
+                        ++testfailed;
+                    }                    
                 }
             }            
         } else {
@@ -458,6 +507,68 @@ int main(int argc, char** argv)
         }
     }
     
+    {
+        rpn.clear();
+        varmap_t& vars = rpn.variables();
+        std::string v1("v1");
+        std::string v2("v2");
+        std::string str( "1.1 2.2  @v1 ^ @v2" );
+        std::stringstream ss(str);
+        std::cout << "       eval acces variables: "  << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {            
+            bool res = bool( vars[v1] == 2.2 );
+            std::cout << "result: " << v1 << "=" << vars[v1] << std::boolalpha << " " <<res << std::endl;  
+            if( !res ) {
+                ++testfailed;                    
+            }
+            res = bool( vars[v2] == 1.1 );
+            std::cout << "result: " << v2 << "=" << vars[v2] << std::boolalpha << " " <<res << std::endl;  
+            if( !res ) {
+                ++testfailed;                    
+            }
+            std::string str1( "$v1 $v2 + @res" );
+            ss.str(str1);
+            std::cout << "     --  eval add vars: "  << str1 << std::endl;    
+            if( RPNEC::ecOk == rpn.eval(ss) ) {   
+                double result = 3.3;
+                bool res = bool(  std::abs(vars["res"] - result) < 1.0e-15 );
+                std::cout << "result: " << vars["res"] << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+
+            } else {
+                std::cout << "error"  << std::endl;                
+                ++testfailed;                       
+            }
+            
+                        
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+        
+        std::string str1( "$v1 $v2 + @res" );
+        ss.str(str1);
+        vars[v1] = 3.3;
+        vars[v2] = 4.4;
+        std::cout << "       eval acces result: "  << str1 << " input: v1  " << vars[v1] << " v2 " << vars[v2] << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {            
+            bool res = bool( vars["res"] == 7.7 );
+            std::cout << "result: " << vars["res"] << std::boolalpha << " " << res << std::endl;  
+            if( !res ) {
+                ++testfailed;                    
+            }
+                        
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+        
+    }
+    
+    
+
     // end result
     
     if(testfailed) {

@@ -54,6 +54,8 @@ namespace rpnCalculator
 class RpnCalculator {
     
 public:
+    typedef std::map< std::string, double > varmap_t;
+    
     RpnCalculator() {}
     
     ~RpnCalculator() {}
@@ -74,10 +76,11 @@ public:
         double val2;
         double val3;
         std::string op;
+        inp.clear();
         while(!inp.eof()) {    
             std::stringstream::pos_type pos = inp.tellg();
             inp >> val1; // try to interpret as number
-            if( inp.good() ) {
+            if( !inp.fail() ) {
                 stack.push_back(val1);
                 continue;
             }
@@ -118,7 +121,7 @@ public:
                 case '^' : // pop stack top 
                     if( stack.size() < 1 )
                         return EC::ecStackLow;
-                    pop();
+                    drop();
                     continue;
                 case '~' : // duplicate
                     if( stack.size() < 1 )
@@ -201,12 +204,14 @@ public:
                     push( val2 );                     
                     push( val1 );                     
                     push( val3 );                     
-                } else if ( op[0] == '@' ) { // copy stack to var                    
+                // @ is a prefix no space after!
+                } else if ( op[0] == '@' ) { // copy stack to variable                    
                     if( stack.size() < 1 )
                         return EC::ecStackLow;
-                    vars[op.substr(1)] = get();
-                } else if ( op[0] == '$' ) { // push var to stack
-                    if( !hasResult(op.substr(1)) )
+                    vars[op.substr(1)] = get();  // chop prefix
+                // $ is a prefix no space after!
+                } else if ( op[0] == '$' ) { // push variable to stack
+                    if( !hasResult(op.substr(1)) ) // chop prefix
                         return EC::ecIllegalVar;
                     push(vars[op.substr(1)]);                    
                 } else {
@@ -216,12 +221,14 @@ public:
         } // end while
         return EC::ecOk;
     }
-        
+    
+    // result from stack 
     bool hasResult() const
     {
         return stack.size() > 0;
     }
     
+    // result from variable
     bool hasResult(const std::string& var) const
     {
         return vars.find(var) !=  vars.end();
@@ -230,18 +237,26 @@ public:
     void clear()
     {
         stack.clear();
+        vars.clear();
     }
     
+    // result from stack
     double result() const
     {
         if( stack.size() > 0 )
             return stack.back();
         return 0.0;
     }
-
+    
+    // result from variable
     double result( const std::string& var)
     {
         return vars[var];
+    }
+    
+    varmap_t& variables()
+    {
+        return vars;
     }
     
 private:
@@ -251,15 +266,19 @@ private:
         stack.pop_back();
         return val;        
     }
+    void drop()
+    {
+        stack.pop_back();
+    }
     void push(double val)
     {
         stack.push_back(val);
     }
-    double get()
+    double get() const
     {
         return stack.back();
     }
-    double get( uint32_t index )
+    double get( uint32_t index ) const
     {
         return stack[stack.size()-1-index];
     }
@@ -270,7 +289,7 @@ private:
     
     // members
     std::vector<double> stack;    
-    std::map< std::string, double > vars;    
+    varmap_t vars;    
 };
     
 } // end namespace rpnCalculator
