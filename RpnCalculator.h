@@ -19,7 +19,7 @@
 #include    <cmath>
 #include    <vector>
 #include    <map>
-
+#include    <limits>
 //
 //
 // operators
@@ -40,6 +40,7 @@
 //  tan
 //  log
 //  exp
+//  dupn   push the stack[n] to the top of stack; n is on the top of stack and will be first popped
 //
 // variables
 //  @v1 copy top of stack to variable v1; if v1 exists overwrite it
@@ -56,8 +57,17 @@ public:
     
     ~RpnCalculator() {}
     
-    bool eval( std::stringstream& inp )
-    {    
+    enum class EC : int {   // error code
+        ecOk,               // no error
+        ecStackLow,         // stack is too low - non existent value
+        ecIllegalOp,        // illegal operator
+        ecIllegalVar,       // illegal variable
+        ecIndexToobig,      // index too big
+        
+    };
+    
+    EC eval( std::stringstream& inp )
+    {            
         double val1;
         double val2;
         std::string op;
@@ -76,106 +86,117 @@ public:
                 switch( op[0] ) {
                 case '+' :
                     if( stack.size() < 2 )
-                        return false;
+                        return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val1 + val2);                
                     continue;                
                 case '-' :
                     if( stack.size() < 2 )
-                        return false;
+                        return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val2 - val1);                
                     continue;
                 case '/' :
                     if( stack.size() < 2 )
-                        return false;
+                        return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val2 / val1);                
                     continue;
                 case '*' :
                     if( stack.size() < 2 )
-                        return false;
+                        return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val1 * val2);                
                     continue;                
                 case '^' : // pop stack top 
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     pop();
                     continue;
                 case '~' : // duplicate
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     push( stack[0] );                
                     continue;
                 case '!' : // negate
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(-get());
                     continue;
                 case 'r' : // reciproc
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(1.0/get());
                     continue;
                 default:
-                    return false;
+                    return EC::ecIllegalOp;                    
                 }
                 
             } else {
                 if( op == "swap" ) {
                     if( stack.size() < 2 )
-                        return false;
+                        return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val1);                
                     push(val2);                
                 } else if ( op == "sin" ) {
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(std::sin(get()));
                 } else if ( op == "cos" ) {
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(std::cos(get()));
                 } else if ( op == "tan" ) {
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(std::tan(get()));
                 } else if ( op == "log" ) {
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(std::log(get()));
                 } else if ( op == "exp" ) {
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     set(std::exp(get()));
+                } else if ( op == "dupn" ) { // push stack[n] to stack
+                    if( stack.size() < 2 ) // index + at least 1 variable
+                        return EC::ecStackLow;
+                    val1 = pop();   // index
+                    if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
+                        return EC::ecIndexToobig;
+                    uint32_t index = uint32_t(val1);
+                    if( stack.size() < index )
+                        return EC::ecIndexToobig;                    
+                    val2 = get(index);
+                    push(val2);
                 } else if ( op == "mod" ) {
                     if( stack.size() < 2 )
-                        return false;
+                        return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push( std::fmod( val2, val1 ) ); 
                 } else if ( op[0] == '@' ) { // copy stack to var                    
                     if( stack.size() < 1 )
-                        return false;
+                        return EC::ecStackLow;
                     vars[op.substr(1)] = get();
                 } else if ( op[0] == '$' ) { // push var to stack
                     if( !hasResult(op.substr(1)) )
-                        return false;
+                        return EC::ecIllegalVar;
                     push(vars[op.substr(1)]);                    
                 } else {
-                    return false;                    
+                    return EC::ecIllegalOp;                    
                 }                                       
             }
         }
-        return true;
+        return EC::ecOk;
     }
-    
+
     bool hasResult() const
     {
         return stack.size() > 0;
@@ -217,6 +238,10 @@ private:
     double get()
     {
         return stack.back();
+    }
+    double get( uint32_t index )
+    {
+        return stack[stack.size()-1-index];
     }
     void set(double val)
     {
