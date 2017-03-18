@@ -80,7 +80,8 @@ public:
         ecStackLow,         // stack is too low - non existent value
         ecIllegalOp,        // illegal operator
         ecIllegalVar,       // illegal variable
-        ecIndexToobig,      // index too big        
+        ecIndexTooBig,      // index too big        
+        ecIndexTooSmall     // index too small        
     };
     
     // __attribute__ ((noinline)) is gcc specific
@@ -171,10 +172,12 @@ public:
                         return EC::ecStackLow;
                     val1 = pop();   // index
                     if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
-                        return EC::ecIndexToobig;
+                        return EC::ecIndexTooBig;
+                    if( val1 <= 0 ) // too small number
+                        return EC::ecIndexTooSmall;
                     uint32_t index = uint32_t(val1);
                     if( stack.size()-1 < index )  // stack size : 1.. index: 0 ..
-                        return EC::ecIndexToobig;                    
+                        return EC::ecIndexTooBig;                    
                     val2 = get(index);
                     push(val2);
                 } else if ( op == "mod" ) {
@@ -301,11 +304,7 @@ public:
                 } else if ( op == "atanh" ) {
                     if( stack.size() < 1 )
                         return EC::ecStackLow;
-                    set(std::atanh(get()));
-                } else if ( op == "asinh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::asinh(get()));                    
+                    set(std::atanh(get()));                   
                 //
                 // 2 operand math
                 //
@@ -338,7 +337,44 @@ public:
                         return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
-                    push(std::atan2(val1,val2));                
+                    push(std::atan2(val1,val2));   
+                } else if ( op == "addn" ) { // add n numbers
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();   // count
+                    if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
+                        return EC::ecIndexTooBig;
+                    if( val1 <= 1 ) // too small number
+                        return EC::ecIndexTooSmall;
+                    uint32_t count = uint32_t(val1);                    
+                    if( stack.size() < count )  // stack size : 1.. index: 0 ..
+                        return EC::ecIndexTooBig; 
+                    val2 = pop();
+                    for(uint32_t i=0; i<count-1; ++i ) {
+                        val2 += pop();
+                    }                    
+                    push(val2);   
+                } else if ( op == "multn" ) { // mult n numbers
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();   // count
+                    if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
+                        return EC::ecIndexTooBig;
+                    if( val1 <= 1 ) // too small number
+                        return EC::ecIndexTooSmall;
+                    uint32_t count = uint32_t(val1);                    
+                    if( stack.size() < count )  // stack size : 1.. index: 0 ..
+                        return EC::ecIndexTooBig; 
+                    val2 = pop();
+                    for(uint32_t i=0; i<count-1; ++i ) {
+                        val2 *= pop();
+                    }                    
+                    push(val2);   
+                    
+                } else if ( op == "clrs" ) { // clear stack
+                    stack.clear();
+                } else if ( op == "clrv" ) { // clear variables
+                    vars.clear();
                 } else {
                     return EC::ecIllegalOp;                    
                 } 

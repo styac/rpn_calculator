@@ -570,7 +570,6 @@ int main(int argc, char** argv)
             std::cout << "     --  eval add vars: "  << str1 << std::endl;    
             if( RPNEC::ecOk == rpn.eval(ss) ) {   
                 double result = 3.3;
-                // small diff: 4.44089e-16 ??
                 bool res = bool( std::abs( vars["res"] - result ) < 1.0e-15 );
                 std::cout << "result: " << vars["res"] << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
@@ -606,8 +605,45 @@ int main(int argc, char** argv)
         }
         
     }
-    
-    
+    {
+        std::cout << "\n****** add n numbers ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "1 2 3 4 5 6 6 addn" );
+        std::stringstream ss(str);
+        std::cout << "       eval addn: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 21 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }
+        
+    {
+        std::cout << "\n****** multiply n numbers ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "1 2 3 4 5 6 6 multn" );
+        std::stringstream ss(str);
+        std::cout << "       eval addn: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 720 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }
 
     // end result
     
