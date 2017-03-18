@@ -12,6 +12,7 @@
  * 
  * The above copyright notice and this permission notice shall be included 
  * in all copies or substantial portions of the Software.
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
@@ -28,11 +29,12 @@
 #include    <cstdint>
 #include    <string>
 #include    <sstream>
-#include    <iostream>
+// #include    <iostream>
 #include    <cmath>
 #include    <vector>
 #include    <map>
 #include    <limits>
+//#include    <algorithm>
 //
 //
 // operators
@@ -54,12 +56,12 @@
 //  log
 //  exp
 //  dupn   push the stack[n] to the top of stack; n is on the top of stack and will be first popped
+// + a lot of other math
 //
 // variables
 //  @v1 copy top of stack to variable v1; if v1 exists overwrite it
 //  $v1 push variable v1 to stack
 //
-
 
 namespace rpnCalculator
 {
@@ -151,6 +153,8 @@ public:
                         return EC::ecStackLow;
                     set(1.0/get());
                     continue;
+                // TODO
+                // put here all func to select with 1st char
                 default:
                     return EC::ecIllegalOp;                    
                 } // end switch                
@@ -161,27 +165,7 @@ public:
                     val1 = pop();
                     val2 = pop();
                     push(val1);                
-                    push(val2);                
-                } else if ( op == "sin" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::sin(get()));
-                } else if ( op == "cos" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::cos(get()));
-                } else if ( op == "tan" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::tan(get()));
-                } else if ( op == "log" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::log(get()));
-                } else if ( op == "exp" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::exp(get()));
+                    push(val2);                                    
                 } else if ( op == "dupn" ) { // push stack[n] to stack
                     if( stack.size() < 2 ) // index + at least 1 variable
                         return EC::ecStackLow;
@@ -226,7 +210,135 @@ public:
                 } else if ( op[0] == '$' ) { // push variable to stack
                     if( !hasResult(op.substr(1)) ) // chop prefix
                         return EC::ecIllegalVar;
-                    push(vars[op.substr(1)]);                    
+                    push(vars[op.substr(1)]);     
+                //
+                // 1 operand math
+                //
+                } else if ( op == "sin" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::sin(get()));
+                } else if ( op == "cos" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::cos(get()));
+                } else if ( op == "tan" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::tan(get()));
+                } else if ( op == "log" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::log(get()));                    
+                } else if ( op == "exp" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::exp(get()));                    
+                } else if ( op == "abs" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::abs(get()));
+                } else if ( op == "exp2" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::exp2(get()));                    
+                } else if ( op == "expm1" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::expm1(get()));
+                } else if ( op == "log10" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::log10(get()));
+                } else if ( op == "log2" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::log2(get()));
+                } else if ( op == "log1p" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::log1p(get()));
+                } else if ( op == "sqrt" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::sqrt(get()));
+                } else if ( op == "cbrt" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::cbrt(get()));                                        
+                } else if ( op == "asin" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::asin(get()));                    
+                } else if ( op == "acos" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::acos(get()));
+                } else if ( op == "atan" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::atan(get()));                    
+                } else if ( op == "sinh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::sinh(get()));
+                } else if ( op == "cosh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::cosh(get()));
+                } else if ( op == "tanh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::tanh(get()));
+                } else if ( op == "asinh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::asinh(get()));
+                } else if ( op == "acosh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::acosh(get()));
+                } else if ( op == "atanh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::atanh(get()));
+                } else if ( op == "asinh" ) {
+                    if( stack.size() < 1 )
+                        return EC::ecStackLow;
+                    set(std::asinh(get()));                    
+                //
+                // 2 operand math
+                //
+                } else if ( op == "max" ) {
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    push(std::fmax(val1,val2));                
+                } else if ( op == "min" ) {
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    push(std::fmin(val1,val2));                                    
+                } else if ( op == "rema" ) {
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    push(std::remainder(val1,val2));                
+                } else if ( op == "fdim" ) {
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    push(std::fdim(val1,val2));                                  
+                } else if ( op == "atan2" ) {
+                    if( stack.size() < 2 )
+                        return EC::ecStackLow;
+                    val1 = pop();
+                    val2 = pop();
+                    push(std::atan2(val1,val2));                
                 } else {
                     return EC::ecIllegalOp;                    
                 } 
