@@ -1,10 +1,8 @@
 # rpn_calculator
-rpn (reverse polish) calculator
+# rpn (reverse polish) calculator
 
-simple calculator:
-
- operators
-------------
+## operators
+```
   + 
   - 
   * 
@@ -24,14 +22,11 @@ simple calculator:
   tan
   log
   exp
-
- variable operations
----------------------
+```
+## variable operations
+```
 with valiable name: v1 
 
   @v1 copy top of stack to variable v1; if v1 exists overwrite it
   $v1 push variable v1 to stack
-
-
-
-
+```
