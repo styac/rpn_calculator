@@ -249,15 +249,15 @@ public:
                     return EC::ecIllegalOp;                    
                 } // end switch                
             } else {
-                if( op == "swap" ) {
+                if( op == "swap" ) {            // swap stack top stack top+1
                     if( stack.size() < 2 )
                         return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val1);                
                     push(val2);                                    
-                } else if ( op == "dupn" ) { // push stack[n] to stack
-                    if( stack.size() < 2 ) // index + at least 1 variable
+                } else if ( op == "dupn" ) {    // push stack[n] to stack
+                    if( stack.size() < 2 ) 
                         return EC::ecStackLow;
                     val1 = pop();   // index
                     if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
@@ -269,13 +269,13 @@ public:
                         return EC::ecIndexTooBig;                    
                     val2 = get(index);
                     push(val2);
-                } else if ( op == "mod" ) {
+                } else if ( op == "mod" ) {     // fmod
                     if( stack.size() < 2 )
                         return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push( std::fmod( val2, val1 ) ); 
-                } else if ( op == "rrot" ) {
+                } else if ( op == "rrot" ) {    // right rotate
                     if( stack.size() < 3 )
                         return EC::ecStackLow;
                     val1 = pop();
@@ -284,7 +284,7 @@ public:
                     push( val1 );                     
                     push( val3 );                     
                     push( val2 );                     
-                } else if ( op == "lrot" ) {
+                } else if ( op == "lrot" ) {    // left rotate 
                     if( stack.size() < 3 )
                         return EC::ecStackLow;
                     val1 = pop();
@@ -294,16 +294,17 @@ public:
                     push( val1 );                     
                     push( val3 );                     
                 // @ is a prefix no space after!
-                } else if ( op[0] == '@' ) { // copy stack to variable                    
+                } else if ( op[0] == '@' ) {    // copy stack to variable                    
                     if( stack.size() < 1 )
                         return EC::ecStackLow;
-                    vars[op.substr(1)] = get();  // chop prefix
+                    vars[op.substr(1)] = get(); // chop prefix
                 // $ is a prefix no space after!
-                } else if ( op[0] == '$' ) { // push variable to stack
+                } else if ( op[0] == '$' ) {    // push variable to stack
                     if( !hasResult(op.substr(1)) ) // chop prefix
                         return EC::ecIllegalVar;
                     push(vars[op.substr(1)]);     
-                } else if ( op[0] == '|' ) { // swap variable with stack
+                // | is a prefix no space after!
+                } else if ( op[0] == '|' ) {    // swap variable with stack
                     if( !hasResult(op.substr(1)) ) // chop prefix
                         return EC::ecIllegalVar;
                     val1 = vars[op.substr(1)];
@@ -312,7 +313,7 @@ public:
                 //
                 // 1 operand math
                 //
-                } else if ( op == "rec" ) {
+                } else if ( op == "rec" ) {     // reciprocal  
                     if( stack.size() < 1 )
                         return EC::ecStackLow;
                     set(1.0/get());
@@ -419,7 +420,7 @@ public:
                     val1 = pop();
                     val2 = pop();
                     push(std::fmin(val1,val2));                                    
-                } else if ( op == "rema" ) {
+                } else if ( op == "rema" ) {    // remainder
                     if( stack.size() < 2 )
                         return EC::ecStackLow;
                     val1 = pop();
@@ -437,7 +438,7 @@ public:
                     val1 = pop();
                     val2 = pop();
                     push(std::atan2(val1,val2));   
-                } else if ( op == "addn" ) { // add n numbers
+                } else if ( op == "addn" ) {    // add n numbers with long double precision
                     if( stack.size() < 2 )
                         return EC::ecStackLow;
                     val1 = pop();   // count
@@ -455,7 +456,7 @@ public:
                         val += pop();
                     }                    
                     push(val);   
-                } else if ( op == "multn" ) { // mult n numbers
+                } else if ( op == "multn" ) {   // mult n numbers with long double precision
                     if( stack.size() < 2 )
                         return EC::ecStackLow;
                     val1 = pop();   // count
@@ -474,9 +475,9 @@ public:
                     }                    
                     push(val);   
                     
-                } else if ( op == "clrs" ) { // clear stack
+                } else if ( op == "clrs" ) {    // clear stack
                     stack.clear();
-                } else if ( op == "clrv" ) { // clear variables
+                } else if ( op == "clrv" ) {    // clear variables
                     vars.clear();
                 } else {
                     return EC::ecIllegalOp;                    
