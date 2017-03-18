@@ -62,8 +62,7 @@ public:
         ecStackLow,         // stack is too low - non existent value
         ecIllegalOp,        // illegal operator
         ecIllegalVar,       // illegal variable
-        ecIndexToobig,      // index too big
-        
+        ecIndexToobig,      // index too big        
     };
     
     EC eval( std::stringstream& inp )
@@ -134,8 +133,7 @@ public:
                     continue;
                 default:
                     return EC::ecIllegalOp;                    
-                }
-                
+                } // end switch                
             } else {
                 if( op == "swap" ) {
                     if( stack.size() < 2 )
@@ -171,7 +169,7 @@ public:
                     if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
                         return EC::ecIndexToobig;
                     uint32_t index = uint32_t(val1);
-                    if( stack.size() < index )
+                    if( stack.size()-1 < index )  // stack size : 1.. index: 0 ..
                         return EC::ecIndexToobig;                    
                     val2 = get(index);
                     push(val2);
@@ -191,9 +189,9 @@ public:
                     push(vars[op.substr(1)]);                    
                 } else {
                     return EC::ecIllegalOp;                    
-                }                                       
-            }
-        }
+                } 
+            } 
+        } // end while
         return EC::ecOk;
     }
 
