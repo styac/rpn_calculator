@@ -14,9 +14,15 @@
   r  1.0 / x ( reciprocal )
 
  
-  swap - swap the 2 elements on the stack
+  swap   swap the 2 elements on the stack
   dupn   push the stack[n] to the top of stack; n is on the top of stack and will be first popped
- 
+  rrot   rigth rotation
+                    1 2 3 4 5 rrot                    
+          result    1 2 5 3 4
+          
+  lrot   left rotation
+                    1 2 3 4 5 lrot                    
+          result    1 2 4 5 3
   sin 
   cos
   tan
