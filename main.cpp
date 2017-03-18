@@ -359,7 +359,7 @@ int main(int argc, char** argv)
         std::cout << "       eval left rot: "     << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
-                bool res = bool( rpn.result() == 4 );
+                bool res = bool( rpn.result() == 3 );
                 std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
@@ -377,7 +377,7 @@ int main(int argc, char** argv)
         std::cout << "       eval right rot: "     << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
-                bool res = bool( rpn.result() == 3 );
+                bool res = bool( rpn.result() == 4 );
                 std::cout << "result: "    << rpn.result() << std::boolalpha << " " <<res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    

@@ -183,7 +183,7 @@ public:
                     val1 = pop();
                     val2 = pop();
                     push( std::fmod( val2, val1 ) ); 
-                } else if ( op == "lrot" ) {
+                } else if ( op == "rrot" ) {
                     if( stack.size() < 3 )
                         return EC::ecStackLow;
                     val1 = pop();
@@ -192,7 +192,7 @@ public:
                     push( val1 );                     
                     push( val3 );                     
                     push( val2 );                     
-                } else if ( op == "rrot" ) {
+                } else if ( op == "lrot" ) {
                     if( stack.size() < 3 )
                         return EC::ecStackLow;
                     val1 = pop();
