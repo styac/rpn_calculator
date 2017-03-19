@@ -100,114 +100,58 @@ public:
         inp.clear();
         while( !inp.eof() ) {    
             std::stringstream::pos_type pos = inp.tellg();
-            inp >> val1; // try to interpret as number
-            if( !inp.fail() ) {
-                stack.push_back(val1);
-                continue;
-            }
-            inp.clear(); // in c++11 not needed
-            inp.seekg(pos); // back - get it as string
-            op.clear();
             inp >> op;
             if( op.size() == 1 ) {
-                switch( op[0] ) {
+                switch( op[0] ) { // 1 char op
                 case '+' :
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 2 ) return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val1 + val2);                
                     continue;                
                 case '-' :
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 2 ) return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val2 - val1);                
                     continue;
                 case '/' :
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 2 ) return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val2 / val1);                
                     continue;
                 case '*' :
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 2 ) return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
                     push(val1 * val2);                
                     continue;                
                 case '^' : // pop stack top 
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 1 ) return EC::ecStackLow;
                     drop();
                     continue;
                 case '~' : // duplicate
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 1 ) return EC::ecStackLow;
                     push( stack[0] );                
                     continue;
                 case '!' : // negate
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
+                    if( stack.size() < 1 ) return EC::ecStackLow;
                     set(-get());
                     continue;
-                // TODO
-                // put here all func to select with 1st char
-                case 'a' : 
-//                    continue;                    
-                case 'b' : 
-//                    continue;                    
-                case 'c' : 
-//                    continue;                    
-                case 'd' : 
-//                    continue;                    
-                case 'e' : 
-//                    continue;                    
-                case 'f' : 
-//                    continue;                    
-                case 'g' : 
-//                    continue;                    
-                case 'h' : 
-//                    continue;                    
-                case 'i' : 
-//                    continue;                    
-                case 'j' : 
-//                    continue;                    
-                case 'k' : 
-//                    continue;                    
-                case 'l' : 
-//                    continue;                    
-                case 'm' : 
-//                    continue;                    
-                case 'n' : 
-//                    continue;                    
-                case 'o' : 
-//                    continue;                    
-                case 'p' : 
-//                    continue;                    
-                case 'q' : 
-//                    continue;                    
-                case 'r' : 
-//                    continue;                    
-                case 's' : 
-//                    continue;                    
-                case 't' : 
-//                    continue;                    
-                case 'u' : 
-//                    continue;                    
-                case 'v' : 
-//                    continue;                    
-                case 'w' : 
-//                    continue;                    
-                case 'x' : 
-//                    continue;                    
-                case 'y' : 
-//                    continue;                    
-                case 'z' : 
-//                    continue;                    
+                case '0' : 
+                case '1' : 
+                case '2' : 
+                case '3' : 
+                case '4' : 
+                case '5' : 
+                case '6' : 
+                case '7' : 
+                case '8' : 
+                case '9' : 
+                    val1 = int(op[0] - 0x30);
+                    push(val1);
+                    continue;                    
 // reserved                    
 //                case '&' : 
 //                    continue;                    
@@ -220,8 +164,6 @@ public:
 //                case '>' : 
 //                    continue;                    
 //                case '=' : 
-//                    continue;                    
-//                case '.' : 
 //                    continue;                    
 //                case ',' : 
 //                    continue;                    
@@ -243,245 +185,291 @@ public:
 //                    continue;                    
 //                case '%' : 
 //                    continue;                    
-                    
-                    
-                default:
-                    return EC::ecIllegalOp;                    
+                default: return EC::ecIllegalOp;                    
                 } // end switch                
-            } else {
-                if( op == "swap" ) {            // swap stack top stack top+1
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push(val1);                
-                    push(val2);                                    
-                } else if ( op == "dupn" ) {    // push stack[n] to stack
-                    if( stack.size() < 2 ) 
-                        return EC::ecStackLow;
-                    val1 = pop();   // index
-                    if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
-                        return EC::ecIndexTooBig;
-                    if( val1 <= 0 ) // too small number
-                        return EC::ecIndexTooSmall;
-                    uint32_t index = uint32_t(val1);
-                    if( stack.size()-1 < index )  // stack size : 1.. index: 0 ..
-                        return EC::ecIndexTooBig;                    
-                    val2 = get(index);
-                    push(val2);
-                } else if ( op == "mod" ) {     // fmod
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push( std::fmod( val2, val1 ) ); 
-                } else if ( op == "rrot" ) {    // right rotate
-                    if( stack.size() < 3 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    val3 = pop();
-                    push( val1 );                     
-                    push( val3 );                     
-                    push( val2 );                     
-                } else if ( op == "lrot" ) {    // left rotate 
-                    if( stack.size() < 3 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    val3 = pop();
-                    push( val2 );                     
-                    push( val1 );                     
-                    push( val3 );                     
-                // @ is a prefix no space after!
-                } else if ( op[0] == '@' ) {    // copy stack to variable                    
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
+            } else { // long op
+                switch( op[0] ) {
+                case '.' : 
+                case '+' : 
+                case '-' : 
+                case '0' : 
+                case '1' : 
+                case '2' : 
+                case '3' : 
+                case '4' : 
+                case '5' : 
+                case '6' : 
+                case '7' : 
+                case '8' : 
+                case '9' : 
+                    // convert to number
+                    inp.clear(); // in c++11 not needed
+                    inp.seekg(pos); // back - get it as string                    
+                    inp >> val1; // try to interpret as number
+                    if( inp.fail() ) stack.push_back(val1);
+                    push(val1);                    
+                    continue;                    
+                case 'a' : 
+                    if ( op == "abs" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::abs(get()));
+                    } else if ( op == "asin" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::asin(get()));                    
+                    } else if ( op == "acos" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::acos(get()));
+                    } else if ( op == "atan" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::atan(get()));                    
+                    } else if ( op == "asinh" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::asinh(get()));
+                    } else if ( op == "acosh" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::acosh(get()));
+                    } else if ( op == "atanh" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::atanh(get()));                   
+                    } else if ( op == "atan2" ) {
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push(std::atan2(val1,val2));   
+                    } else if ( op == "addn" ) {    // add n numbers with long double precision
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();   // count
+                        if( val1 >= std::numeric_limits<uint32_t>::max() ) return EC::ecIndexTooBig;                    
+                        if( val1 < 1.0 ) return EC::ecIndexTooSmall;
+                        uint32_t count = uint32_t(val1); // truncated
+                        if( count == 1 )
+                            continue; // 1 operand
+                        if( stack.size() < count ) return EC::ecIndexTooBig; 
+                        long double val = pop();
+                        for(uint32_t i=0; i<count-1; ++i ) {
+                            val += pop();
+                        }                    
+                        push(val);   
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+//                case 'b' : 
+//                    continue;                    
+                case 'c' : 
+                    if ( op == "cos" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::cos(get()));
+                    } else if ( op == "cbrt" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::cbrt(get()));                                        
+                    } else if ( op == "cosh" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::cosh(get()));
+                    } else if ( op == "clrs" ) {    // clear stack
+                        stack.clear();
+                    } else if ( op == "clrv" ) {    // clear variables
+                        vars.clear();                        
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+                case 'd' : 
+                    if ( op == "dupn" ) {    // push stack[n] to stack
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();   // index
+                        if( val1 >= std::numeric_limits<uint32_t>::max() ) return EC::ecIndexTooBig;
+                        if( val1 <= 0 ) return EC::ecIndexTooSmall;
+                        uint32_t index = uint32_t(val1);
+                        if( stack.size()-1 < index )  return EC::ecIndexTooBig;                    
+                        val2 = get(index);
+                        push(val2);
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+                case 'e' : 
+                    if ( op == "exp" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::exp(get()));                    
+                    } else if ( op == "exp2" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::exp2(get()));                    
+                    } else if ( op == "expm1" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::expm1(get()));
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+                case 'f' : 
+                    if ( op == "fdim" ) {
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push(std::fdim(val1,val2));                                  
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+//                case 'g' : 
+//                    continue;                    
+//                case 'h' : 
+//                    continue;                    
+//                case 'i' : 
+//                    continue;                    
+//                case 'j' : 
+//                    continue;                    
+//                case 'k' : 
+//                    continue;                    
+                case 'l' : 
+                    if ( op == "lrot" ) {    // left rotate 
+                        if( stack.size() < 3 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        val3 = pop();
+                        push( val2 );                     
+                        push( val1 );                     
+                        push( val3 );                     
+                    } else if ( op == "log" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::log(get()));                    
+                    } else if ( op == "log10" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::log10(get()));
+                    } else if ( op == "log2" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::log2(get()));
+                    } else if ( op == "log1p" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::log1p(get()));
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+                case 'm' : 
+                    if ( op == "mod" ) {     // fmod
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push( std::fmod( val2, val1 ) ); 
+                    } else if ( op == "max" ) {
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push(std::fmax(val1,val2));                
+                    } else if ( op == "min" ) {
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push(std::fmin(val1,val2));                                    
+                    } else if ( op == "multn" ) {   // mult n numbers with long double precision
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();   // count
+                        if( val1 >= std::numeric_limits<uint32_t>::max() ) return EC::ecIndexTooBig;
+                        if( val1 < 1.0 ) return EC::ecIndexTooSmall;
+                        uint32_t count = uint32_t(val1);   // truncated                 
+                        if( count == 1 )
+                            continue; // 1 operand
+                        if( stack.size() < count ) return EC::ecIndexTooBig; 
+                        long double val = pop();
+                        for(uint32_t i=0; i<count-1; ++i ) {
+                            val *= pop();
+                        }                    
+                        push(val);   
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+//                case 'n' : 
+//                    continue;                    
+//                case 'o' : 
+//                    continue;                    
+//                case 'p' : 
+//                    continue;                    
+//                case 'q' : 
+//                    continue;                    
+                case 'r' : 
+                    if ( op == "rrot" ) {    // right rotate
+                        if( stack.size() < 3 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        val3 = pop();
+                        push( val1 );                     
+                        push( val3 );                     
+                        push( val2 );                     
+                    } else if ( op == "rec" ) {     // reciprocal  
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(1.0/get());
+                    } else if ( op == "rema" ) {    // remainder
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push(std::remainder(val1,val2));                
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+                case 's' : 
+                    if( op == "swap" ) {            // swap stack top stack top+1
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        push(val1);                
+                        push(val2);                                    
+                    } else if ( op == "sin" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::sin(get()));
+                    } else if ( op == "sqrt" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::sqrt(get()));
+                    } else if ( op == "sinh" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::sinh(get()));
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+                case 't' : 
+                    if ( op == "tan" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::tan(get()));
+                    } else if ( op == "tanh" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::tanh(get()));
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
+//                case 'u' : 
+//                    continue;                    
+//                case 'v' : 
+//                    continue;                    
+//                case 'w' : 
+//                    continue;                    
+//                case 'x' : 
+//                    continue;                    
+//                case 'y' : 
+//                    continue;                    
+//                case 'z' : 
+//                    continue;                    
+                case '@' : // copy stack to variable  
+                    if( stack.size() < 1 ) return EC::ecStackLow;
                     vars[op.substr(1)] = get(); // chop prefix
-                // $ is a prefix no space after!
-                } else if ( op[0] == '$' ) {    // push variable to stack
-                    if( !hasResult(op.substr(1)) ) // chop prefix
-                        return EC::ecIllegalVar;
+                    continue;                    
+                case '$' : // push variable to stack
+                    if( !hasResult(op.substr(1)) ) return EC::ecIllegalVar;
                     push(vars[op.substr(1)]);     
-                // | is a prefix no space after!
-                } else if ( op[0] == '|' ) {    // swap variable with stack
-                    if( !hasResult(op.substr(1)) ) // chop prefix
-                        return EC::ecIllegalVar;
+                    continue;                    
+                case '|' : // swap variable with stack
+                    if( !hasResult(op.substr(1)) ) return EC::ecIllegalVar;
                     val1 = vars[op.substr(1)];
                     vars[op.substr(1)] = get();
                     set(val1);
-                //
-                // 1 operand math
-                //
-                } else if ( op == "rec" ) {     // reciprocal  
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(1.0/get());
-                } else if ( op == "sin" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::sin(get()));
-                } else if ( op == "cos" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::cos(get()));
-                } else if ( op == "tan" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::tan(get()));
-                } else if ( op == "log" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::log(get()));                    
-                } else if ( op == "exp" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::exp(get()));                    
-                } else if ( op == "abs" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::abs(get()));
-                } else if ( op == "exp2" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::exp2(get()));                    
-                } else if ( op == "expm1" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::expm1(get()));
-                } else if ( op == "log10" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::log10(get()));
-                } else if ( op == "log2" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::log2(get()));
-                } else if ( op == "log1p" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::log1p(get()));
-                } else if ( op == "sqrt" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::sqrt(get()));
-                } else if ( op == "cbrt" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::cbrt(get()));                                        
-                } else if ( op == "asin" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::asin(get()));                    
-                } else if ( op == "acos" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::acos(get()));
-                } else if ( op == "atan" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::atan(get()));                    
-                } else if ( op == "sinh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::sinh(get()));
-                } else if ( op == "cosh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::cosh(get()));
-                } else if ( op == "tanh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::tanh(get()));
-                } else if ( op == "asinh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::asinh(get()));
-                } else if ( op == "acosh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::acosh(get()));
-                } else if ( op == "atanh" ) {
-                    if( stack.size() < 1 )
-                        return EC::ecStackLow;
-                    set(std::atanh(get()));                   
-                //
-                // 2 operand math
-                //
-                } else if ( op == "max" ) {
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push(std::fmax(val1,val2));                
-                } else if ( op == "min" ) {
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push(std::fmin(val1,val2));                                    
-                } else if ( op == "rema" ) {    // remainder
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push(std::remainder(val1,val2));                
-                } else if ( op == "fdim" ) {
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push(std::fdim(val1,val2));                                  
-                } else if ( op == "atan2" ) {
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();
-                    val2 = pop();
-                    push(std::atan2(val1,val2));   
-                } else if ( op == "addn" ) {    // add n numbers with long double precision
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();   // count
-                    if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
-                        return EC::ecIndexTooBig;                    
-                    if( val1 < 1.0 ) // too small number
-                        return EC::ecIndexTooSmall;
-                    uint32_t count = uint32_t(val1); // truncated
-                    if( count == 1 )
-                        continue; // 1 operand
-                    if( stack.size() < count )  // stack size : 1.. index: 0 ..
-                        return EC::ecIndexTooBig; 
-                    long double val = pop();
-                    for(uint32_t i=0; i<count-1; ++i ) {
-                        val += pop();
-                    }                    
-                    push(val);   
-                } else if ( op == "multn" ) {   // mult n numbers with long double precision
-                    if( stack.size() < 2 )
-                        return EC::ecStackLow;
-                    val1 = pop();   // count
-                    if( val1 >= std::numeric_limits<uint32_t>::max() ) // too big number
-                        return EC::ecIndexTooBig;
-                    if( val1 < 1.0 ) // too small number
-                        return EC::ecIndexTooSmall;
-                    uint32_t count = uint32_t(val1);   // truncated                 
-                    if( count == 1 )
-                        continue; // 1 operand
-                    if( stack.size() < count )  // stack size : 1.. index: 0 ..
-                        return EC::ecIndexTooBig; 
-                    long double val = pop();
-                    for(uint32_t i=0; i<count-1; ++i ) {
-                        val *= pop();
-                    }                    
-                    push(val);   
-                    
-                } else if ( op == "clrs" ) {    // clear stack
-                    stack.clear();
-                } else if ( op == "clrv" ) {    // clear variables
-                    vars.clear();
-                } else {
-                    return EC::ecIllegalOp;                    
-                } 
+                    continue;                    
+                default:
+                    return EC::ecIllegalOp;                                            
+                }
             } 
         } // end while
         return EC::ecOk;

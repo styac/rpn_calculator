@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     {
         std::cout << "\n****** push ****\n" << std::endl;    
         rpn.clear();
-        std::string str( "1" );
+        std::string str( "-1 +1 +.5 -1 -.5 1" );
         std::stringstream ss(str);
         std::cout << "       eval push: "     << str << std::endl;    
         if( RPNEC::ecOk == (rpres = rpn.eval(ss))  ) {
@@ -63,6 +63,19 @@ int main(int argc, char** argv)
             ++testfailed;
         }
     }
+    {
+        std::cout << "\n****** push illegal number ****\n" << std::endl;    
+        rpn.clear();
+        std::string str( "-1x0" );
+        std::stringstream ss(str);
+        std::cout << "       eval push: "     << str << std::endl;    
+        if( RPNEC::ecOk != (rpres = rpn.eval(ss))  ) {
+            std::cout << "error ok: " << int(rpres) << std::endl;                                        
+        } else {
+            std::cout << "error " << int(rpres) << std::endl;                            
+            ++testfailed;
+        }
+    }    
     {
         std::cout << "\n****** add ****\n" << std::endl;  
         rpn.clear();
