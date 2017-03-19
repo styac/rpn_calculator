@@ -30,39 +30,12 @@
 #include    <cstdlib>
 #include    <string>
 #include    <sstream>
-#include    <iostream>
+//#include    <iostream>
 #include    <cmath>
 #include    <vector>
 #include    <map>
 #include    <limits>
 //#include    <algorithm>
-//
-//
-// operators
-//  + 
-//  - 
-//  * 
-//  /
-// 
-//  ^ pop 
-//  ! negate
-//  ~ dup 
-//  r  1.0 / x
-//
-// 
-//  swap 
-//  sin
-//  cos
-//  tan
-//  log
-//  exp
-//  dupn   push the stack[n] to the top of stack; n is on the top of stack and will be first popped
-// + a lot of other math
-//
-// variables
-//  @v1 copy top of stack to variable v1; if v1 exists overwrite it
-//  $v1 push variable v1 to stack
-//
 
 namespace rpnCalculator
 {
@@ -128,13 +101,13 @@ public:
                     val2 = pop();
                     push(val1 * val2);                
                     continue;                
-                case '^' : // pop stack top 
+                case '^' : // duplicate 
+                    if( stack.size() < 1 ) return EC::ecStackLow;
+                    push( get() );
+                    continue;
+                case '~' : // drop
                     if( stack.size() < 1 ) return EC::ecStackLow;
                     drop();
-                    continue;
-                case '~' : // duplicate
-                    if( stack.size() < 1 ) return EC::ecStackLow;
-                    push( stack[0] );                
                     continue;
                 case '!' : // negate
                     if( stack.size() < 1 ) return EC::ecStackLow;
@@ -150,7 +123,7 @@ public:
                 case '7' : 
                 case '8' : 
                 case '9' : 
-                    val1 = int(op[0] - 0x30);
+                    val1 = int(op[0] - '0');
                     push(val1);
                     continue;                    
 // reserved                    
@@ -213,7 +186,7 @@ public:
                 case 'a' : 
                     if ( op == "abs" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
-                        set(std::abs(get()));
+                        set(std::fabs(get()));
                     } else if ( op == "asin" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(std::asin(get()));                    
@@ -263,6 +236,9 @@ public:
                     } else if ( op == "cbrt" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(std::cbrt(get()));                                        
+                    } else if ( op == "ceil" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::ceil(get()));                                        
                     } else if ( op == "cosh" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(std::cosh(get()));
@@ -308,6 +284,15 @@ public:
                         val1 = pop();
                         val2 = pop();
                         push(std::fdim(val1,val2));                                  
+                    } else if ( op == "floor" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::floor(get()));   
+                    } else if ( op == "fma" ) {
+                        if( stack.size() < 3 ) return EC::ecStackLow;
+                        val1 = pop();
+                        val2 = pop();
+                        val3 = pop();
+                        push(std::fma(val1,val2,val3));                    
                     } else {
                         return EC::ecIllegalOp;                    
                     } 
@@ -398,6 +383,9 @@ public:
                         push( val1 );                     
                         push( val3 );                     
                         push( val2 );                     
+                    } else if ( op == "round" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::round(get()));
                     } else if ( op == "rec" ) {     // reciprocal  
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(1.0/get());
@@ -434,6 +422,9 @@ public:
                     if ( op == "tan" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(std::tan(get()));
+                    } else if ( op == "trunc" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        set(std::trunc(get()));
                     } else if ( op == "tanh" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(std::tanh(get()));

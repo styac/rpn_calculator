@@ -13,8 +13,8 @@
    -
    /
    *
-   ^      : pop stack top 
-   ~      : duplicate
+   ~      : pop stack top 
+   ^      : duplicate
    !      : negate
 
   swap   : swap stack top stack top+1

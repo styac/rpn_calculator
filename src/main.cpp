@@ -210,16 +210,19 @@ int main(int argc, char** argv)
     {
         std::cout << "\n****** dup dup multiply ****\n" << std::endl;  
         rpn.clear();
-        std::string str( "2 ~ ~ * *" );
+        std::string str( "0 1 2 ^ ^ * *" );
         std::stringstream ss(str);
         std::cout << "       eval dup dup: "     << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {
             if( rpn.hasResult() ) {
+                std::string st;
                 bool res = bool( rpn.result() == 8 );
                 std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
                 }
+                rpn.dumpStack(st);
+                std::cout << "stack: "    << st << std::endl;  
             } else {
                 ++testfailed;
             }            
@@ -252,7 +255,7 @@ int main(int argc, char** argv)
     {
         std::cout << "\n****** drop ****\n" << std::endl;  
         rpn.clear();
-        std::string str( "2 3 4 ^" );
+        std::string str( "2 3 4 ~" );
         std::stringstream ss(str);
         std::cout << "       eval pop: "     << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {
@@ -448,7 +451,7 @@ int main(int argc, char** argv)
                 if( !res ) {
                     ++testfailed;                    
                 } else {
-                    std::string str( "^" );
+                    std::string str( "~" );
                     ss.str(str);
                     std::cout << "     --  eval left rot drop: "  << str << std::endl;    
                     if( RPNEC::ecOk == rpn.eval(ss) ) {
@@ -480,7 +483,7 @@ int main(int argc, char** argv)
                 if( !res ) {
                     ++testfailed;                    
                 } else {
-                    std::string str( "^" );
+                    std::string str( "~" );
                     ss.str(str);
                     std::cout << "     --  eval right rot drop: "  << str << std::endl;    
                     if( RPNEC::ecOk == rpn.eval(ss) ) {
@@ -506,7 +509,7 @@ int main(int argc, char** argv)
         std::string v1("v1");
         std::string v2("v2");
         std::string v3("v3");
-        std::string str( "2 @v1 3 @v2 ^ ^ $v1 $v2 +" );
+        std::string str( "2 @v1 3 @v2 ~ ~ $v1 $v2 +" );
         std::stringstream ss(str);
         std::cout << "       eval set var: " << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {
@@ -608,7 +611,7 @@ int main(int argc, char** argv)
         varmap_t& vars = rpn.variables();
         std::string v1("v1");
         std::string v2("v2");
-        std::string str( "1.1 2.2  @v1 ^ @v2" );
+        std::string str( "1.1 2.2  @v1 ~ @v2" );
         std::stringstream ss(str);
         std::cout << "       eval acces variables: "  << str << std::endl;    
         if( RPNEC::ecOk == rpn.eval(ss) ) {            
