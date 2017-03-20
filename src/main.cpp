@@ -342,9 +342,9 @@ int main(int argc, char** argv)
         std::string str( "3.1415 2 * tan" );
         std::stringstream ss(str);
         std::cout << "       eval tan: "     << str << std::endl;    
-        if( RPNEC::ecOk == rpn.eval(ss) ) {
+        if(  RPNEC::ecOk == (rpres = rpn.eval(ss))) {
             if( rpn.hasResult() ) {
-                bool res = bool( rpn.result() == std::tan( 3.1415 *2.0 ) );
+                bool res = bool( rpn.result() == std::tan( 3.1415 * 2.0 ) );
                 std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
                 if( !res ) {
                     ++testfailed;                    
@@ -353,7 +353,7 @@ int main(int argc, char** argv)
                 ++testfailed;
             }            
         } else {
-            std::cout << "error"  << std::endl;                
+            std::cout << "error " << uint16_t(rpres) << std::endl;                
             ++testfailed;                       
         }
     }    
@@ -723,7 +723,100 @@ int main(int argc, char** argv)
             ++testfailed;                       
         }
     }
-    
+
+    {
+        std::cout << "\n****** constants ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "_pi _2pi _e _fi _sq2" );
+        std::cout << "       eval const: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(str) ) {
+            if( rpn.hasResult() ) {
+                std::string st;
+                rpn.dumpStack(st);
+                std::cout << "stack: "    << st << std::endl;  
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }
+
+    {
+        std::cout << "\n****** x*x ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "2.0 x^2" );
+        std::stringstream ss(str);
+        std::cout << "       eval x^2: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 4 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }    
+    {
+        std::cout << "\n****** x*x*x ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "2.0 x^3" );
+        std::stringstream ss(str);
+        std::cout << "       eval x^3: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 8 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }    
+    {
+        std::cout << "\n****** x^7 ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "2.0 7 x^n" );
+        std::stringstream ss(str);
+        std::cout << "       eval x^n: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 128 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }
+    {
+        std::cout << "\n****** x^8 ****\n" << std::endl;  
+        rpn.clear();
+        std::string str( "2.0 8 x^n" );
+        std::stringstream ss(str);
+        std::cout << "       eval x^n: "     << str << std::endl;    
+        if( RPNEC::ecOk == rpn.eval(ss) ) {
+            if( rpn.hasResult() ) {
+                bool res = bool( rpn.result() == 256 );
+                std::cout << "result: "    << rpn.result() << std::boolalpha << " " << res << std::endl;  
+                if( !res ) {
+                    ++testfailed;                    
+                }
+            }            
+        } else {
+            std::cout << "error"  << std::endl;                
+            ++testfailed;                       
+        }
+    }    
     // end result
     
     if(testfailed) {

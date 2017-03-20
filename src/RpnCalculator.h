@@ -30,7 +30,7 @@
 #include    <cstdlib>
 #include    <string>
 #include    <sstream>
-//#include    <iostream>
+#include    <iostream>
 #include    <cmath>
 #include    <vector>
 #include    <map>
@@ -44,7 +44,13 @@ class RpnCalculator {
     
 public:
     typedef std::map< std::string, double > varmap_t;
-    
+    static constexpr double c_pi    = 3.141592653589793238462643383279502884;
+    static constexpr double c_2pi   = c_pi * 2.0;
+    static constexpr double c_sq2   = 1.414213562373095048801688724209698078;
+    static constexpr double c_e     = 2.718281828459045235360287471352662497;
+    static constexpr double c_fi    = 1.618033988749894848204586834365638117; // golden ration
+                                      
+  
     RpnCalculator() {}
     
     ~RpnCalculator() {}
@@ -437,13 +443,68 @@ public:
 //                case 'v' : 
 //                    continue;                    
 //                case 'w' : 
-//                    continue;                    
-//                case 'x' : 
-//                    continue;                    
+//                    continue;    
+                    
+                case 'x' : 
+                    if ( op == "x^2" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        val1 = get();
+                        set(val1*val1);
+                    } else if ( op == "x^3" ) {
+                        if( stack.size() < 1 ) return EC::ecStackLow;
+                        val1 = get();
+                        set(val1*val1*val1);
+                    } else if ( op == "x^n" ) {
+                        if( stack.size() < 2 ) return EC::ecStackLow;
+                        val1 = pop();   // count
+                        if( val1 >= std::numeric_limits<uint32_t>::max() ) return EC::ecIndexTooBig;
+                        uint32_t count = uint32_t(val1);   // truncated                 
+                        val1 = get();   // value
+                        switch( count ) {
+                        case 0:
+                            set(1.0);
+                            continue;
+                        case 1:
+                            continue;
+                        case 2:
+                            set(val1*val1);                            
+                            continue;
+                        case 3:
+                            set(val1*val1*val1);                            
+                            continue;
+                        }
+                        val2 = 1.0;
+                        while( count ) {
+                            if( count & 1 )
+                                val2 *= val1;
+                            count >>= 1;
+                            val1 *= val1;
+                        }                        
+                        set(val2);   
+                        continue;
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    }                     
+                    continue;                    
 //                case 'y' : 
 //                    continue;                    
 //                case 'z' : 
 //                    continue;                    
+                case '_' : 
+                    if ( op == "_pi" ) {
+                        push(c_pi);
+                    } else if ( op == "_2pi" ) {
+                        push(c_2pi);
+                    } else if ( op == "_e" ) {
+                        push(c_e);
+                    } else if ( op == "_sq2" ) {
+                        push(c_sq2);
+                    } else if ( op == "_fi" ) {
+                        push(c_fi);
+                    } else {
+                        return EC::ecIllegalOp;                    
+                    } 
+                    continue;                    
                 case '@' : // copy stack to variable  
                     if( stack.size() < 1 ) return EC::ecStackLow;
                     vars[op.substr(1)] = get(); // chop prefix
