@@ -30,7 +30,7 @@
 #include    <cstdlib>
 #include    <string>
 #include    <sstream>
-#include    <iostream>
+//#include    <iostream>
 #include    <cmath>
 #include    <vector>
 #include    <map>
@@ -48,7 +48,7 @@ public:
     static constexpr double c_2pi   = c_pi * 2.0;
     static constexpr double c_sq2   = 1.414213562373095048801688724209698078;
     static constexpr double c_e     = 2.718281828459045235360287471352662497;
-    static constexpr double c_fi    = 1.618033988749894848204586834365638117; // golden ration
+    static constexpr double c_fi    = 1.618033988749894848204586834365638117; // golden ratio
                                       
   
     RpnCalculator() {}
@@ -87,7 +87,7 @@ public:
                     if( stack.size() < 2 ) return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
-                    push(val1 + val2);                
+                    push(val2 + val1);                
                     continue;                
                 case '-' :
                     if( stack.size() < 2 ) return EC::ecStackLow;
@@ -105,7 +105,7 @@ public:
                     if( stack.size() < 2 ) return EC::ecStackLow;
                     val1 = pop();
                     val2 = pop();
-                    push(val1 * val2);                
+                    push(val2 * val1);                
                     continue;                
                 case '^' : // duplicate 
                     if( stack.size() < 1 ) return EC::ecStackLow;
@@ -213,8 +213,8 @@ public:
                         set(std::atanh(get()));                   
                     } else if ( op == "atan2" ) {
                         if( stack.size() < 2 ) return EC::ecStackLow;
-                        val1 = pop();
                         val2 = pop();
+                        val1 = pop();
                         push(std::atan2(val1,val2));   
                     } else if ( op == "addn" ) {    // summarize n numbers with long double precision
                         if( stack.size() < 2 ) return EC::ecStackLow;
@@ -289,7 +289,7 @@ public:
                         if( stack.size() < 2 ) return EC::ecStackLow;
                         val1 = pop();
                         val2 = pop();
-                        push(std::fdim(val1,val2));                                  
+                        push(std::fdim(val2,val1));                                  
                     } else if ( op == "floor" ) {
                         if( stack.size() < 1 ) return EC::ecStackLow;
                         set(std::floor(get()));   
@@ -298,7 +298,7 @@ public:
                         val1 = pop();
                         val2 = pop();
                         val3 = pop();
-                        push(std::fma(val1,val2,val3));                    
+                        push(std::fma(val3,val2,val1));                    
                     } else {
                         return EC::ecIllegalOp;                    
                     } 
@@ -348,12 +348,12 @@ public:
                         if( stack.size() < 2 ) return EC::ecStackLow;
                         val1 = pop();
                         val2 = pop();
-                        push(std::fmax(val1,val2));                
+                        push(std::fmax(val2,val1));                
                     } else if ( op == "min" ) {
                         if( stack.size() < 2 ) return EC::ecStackLow;
                         val1 = pop();
                         val2 = pop();
-                        push(std::fmin(val1,val2));                                    
+                        push(std::fmin(val2,val1));                                    
                     } else if ( op == "multn" ) {   // mult n numbers with long double precision
                         if( stack.size() < 2 ) return EC::ecStackLow;
                         val1 = pop();   // count
@@ -399,7 +399,7 @@ public:
                         if( stack.size() < 2 ) return EC::ecStackLow;
                         val1 = pop();
                         val2 = pop();
-                        push(std::remainder(val1,val2));                
+                        push(std::remainder(val2,val1));                
                     } else {
                         return EC::ecIllegalOp;                    
                     } 
@@ -441,6 +441,9 @@ public:
 //                case 'u' : 
 //                    continue;                    
 //                case 'v' : 
+// vector: 
+//  v+v v-v v*v v/v a0 a1 ...an-1 b0 b1 ...bn-1 n 
+//  v+k v-k v*k v/k a0 a1 ...an-1 k n                    
 //                    continue;                    
 //                case 'w' : 
 //                    continue;    
